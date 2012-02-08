@@ -8,8 +8,8 @@ Install
 
 So you will ne a few things installed. Listed here:
 
-* [Aircrack-ng](http://www.aircrack-ng.org/) -- `gem install redcarpet` (https://github.com/tanoku/redcarpet)
-* [.textile](http://www.textism.com/tools/textile/) -- `gem install RedCloth`
+* [Aircrack-ng](http://www.aircrack-ng.org/) -- Ubuntu/Debian: `apt-get install aircrack-ng` Fedora/RPM: `yum install aircrack-ng`
+* [Node.js](http://nodejs.org/) -- Node.js for the server
 * [.rdoc](http://rdoc.sourceforge.net/) -- `gem install rdoc -v 3.6.1`
 * [.org](http://orgmode.org/) -- `gem install org-ruby`
 * [.creole](http://wikicreole.org/) -- `gem install creole`
