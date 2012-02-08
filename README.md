@@ -8,29 +8,53 @@ Install
 
 So you will ne a few things installed. Listed here:
 
-* [Aircrack-ng](http://www.aircrack-ng.org/) -- Ubuntu/Debian: `apt-get install aircrack-ng` Fedora/RPM: `yum install aircrack-ng`
+* [Aircrack-ng](http://www.aircrack-ng.org/) -- Ubuntu/Debian: `sudo apt-get install aircrack-ng` Fedora/RPM: `sudo yum install aircrack-ng`
 * [Node.js](http://nodejs.org/) -- Node.js for the server
-* [.rdoc](http://rdoc.sourceforge.net/) -- `gem install rdoc -v 3.6.1`
-* [.org](http://orgmode.org/) -- `gem install org-ruby`
-* [.creole](http://wikicreole.org/) -- `gem install creole`
-* [.mediawiki](http://www.mediawiki.org/wiki/Help:Formatting) -- `gem install wikicloth`
-* [.rst](http://docutils.sourceforge.net/rst.html) -- `easy_install docutils`
-* [.asciidoc](http://www.methods.co.nz/asciidoc/) -- `brew install asciidoc`
-* [.pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::HTML`
-  comes with Perl >= 5.10. Lower versions should install Pod::Simple from CPAN.
 
 
-Contributing
+Installing node.js
 ------------
 
-Want to contribute? Great! There are two ways to add markups.
+Ok I'm going to show you how to install Node.js
 
 
-### Commands
+### Ubuntu/Debian
 
-If your markup is in a language other than Ruby, drop a translator
-script in `lib/github/commands` which accepts input on STDIN and
-returns HTML on STDOUT. See [rest2html][r2h] for an example.
+Install the Dependencies
+    sudo apt-get -y install build-essential g++ libssl-dev
+    sudo apt-get -y install g++ curl libssl-dev apache2-utils
+    sudo apt-get -y install git-core
+
+### Fedora
+
+Install the Dependencies
+    sudo yum install g++ curl libssl-dev apache2-utils
+    sudo yum install git-core
+
+Compile Node.js
+    mkdir /tmp/nodejs
+    cd /tmp/nodejs
+    wget http://nodejs.org/dist/v0.6.6/node-v0.6.6.tar.gz
+    tar -zxvf node-v0.6.2.tar.gz
+    cd node-v0.6.2
+    ./configure
+    make
+and then
+    sudo make install
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Once your script is in place, edit `lib/github/markups.rb` and tell
 GitHub Markup about it. Again we look to [rest2html][r2hc] for
