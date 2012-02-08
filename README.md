@@ -28,10 +28,12 @@ Install the Dependencies
 ### Fedora
 
 Install the Dependencies
+
     sudo yum install g++ curl libssl-dev apache2-utils
     sudo yum install git-core
 
 Compile Node.js
+
     mkdir /tmp/nodejs
     cd /tmp/nodejs
     wget http://nodejs.org/dist/v0.6.6/node-v0.6.6.tar.gz
@@ -39,7 +41,9 @@ Compile Node.js
     cd node-v0.6.2
     ./configure
     make
+    
 and then
+
     sudo make install
 
 
