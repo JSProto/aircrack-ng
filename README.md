@@ -21,9 +21,11 @@ Ok I'm going to show you how to install Node.js
 ### Ubuntu/Debian
 
 Install the Dependencies
+
     sudo apt-get -y install build-essential g++ libssl-dev
     sudo apt-get -y install g++ curl libssl-dev apache2-utils
     sudo apt-get -y install git-core
+
 
 ### Fedora
 
