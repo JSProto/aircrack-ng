@@ -59,6 +59,7 @@ Installing Aircrack-ng Web UI
     cd test
     sudo node app
 
-Node go to [localhost:3000](http://localhost:3000/)
+now go to [localhost:3000](http://localhost:3000/)
 
+and your done.
 
