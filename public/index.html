@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+	<!--<![endif]-->
+	<head>
+		<!-- Basic Page Needs
+		================================================== -->
+		<meta charset="utf-8">
+		<title>electric-wind-4892</title>
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!-- Mobile Specific Metas
+		================================================== -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<!-- CSS
+		================================================== -->
+		<link rel="stylesheet" href="css/base.css">
+		<link rel="stylesheet" href="css/skeleton.css">
+		<link rel="stylesheet" href="css/layout.css">
+		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+		<!-- Favicons
+		================================================== -->
+		<link rel="shortcut icon" href="images/favicon.ico">
+		<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	</head>
+	<body>
+		<!-- Primary Page Layout
+		================================================== -->
+		<!-- Delete everything in this .container and get started on your own site! -->
+		<div class="container start-job">
+			<div class="sixteen columns">
+				<h1 class="remove-bottom" style="margin-top: 40px">Electric-Wind-4892</h1>
+				<h5 class="version">Version 0.0.1</h5>
+				<hr />
+			</div>
+			<div class="one-third column">
+				<h3>About?</h3>
+				<p>
+					This is just a userver that i want to share with TB upload team.
+				</p>
+				<form class="start-job-form" action="">
+					<!-- Label and text input -->
+					<label for="ap-name">AP Name</label>
+					<input type="text" id="ap-name" />
+					<!-- Label and text input -->
+					<label for="iface">iFace</label>
+					<input type="text" id="iface" />
+					<!-- Label and text input -->
+					<label for="mac-of-iface">MAC Of iFace</label>
+					<input type="text" id="mac-of-iface" />
+					<!-- Label and select list -->
+					<button type="submit">
+						Submit Form
+					</button>
+				</form>
+			</div>
+		</div>
+		<div class="container status-job">
+			<div class="sixteen columns">
+				<h1 class="remove-bottom" style="margin-top: 40px">Electric-Wind-4892</h1>
+				<h5 class="version">Version 0.0.1</h5>
+				<hr />
+			</div>
+			<div class="one-third column">
+				<h3>Steps</h3>
+				<p id="steps" style="height: 500;overflow: scroll;"></p>
+			</div>
+			<div class="half-bottom column">
+				<h3>Status</h3>
+				<p id="packet-data"></p>
+				<p id="arp-pps"></p>
+				<p id="crack-keys"></p>
+				<p id="crack-ivs"></p>
+				<hr />
+				<p id="current-ap-name"></p>
+				<p id="current-ap-chan"></p>
+				<p id="current-ap-bssid"></p>
+				<p id="current-ap-encryption"></p>
+				<hr />
+				<p id="current-iface"></p>
+				<p id="current-iface-given"></p>
+				<p id="current-iface-nik"></p>
+				<hr />
+				<p id="airmon-status-start"></p>
+			</div>
+			<div class="one-third column">
+				<h3>Steps</h3>
+				<button type="submit">
+					Stop
+				</button>
+			</div>
+		</div><!-- container -->
+		<!-- JS
+		================================================== -->
+		<script src="http://code.jquery.com/jquery-1.7.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+		<script src="/js/tabs.js"></script>
+		<script type="text/javascript" src="/js/frame5.js"></script>
+		<script type="text/javascript">
+            FRAME5.ready(function() {
+                var socket = io.connect('http://localhost:3000/ws/job');
+                var onStatus = function(apName, iface, info, job) {
+                    console.log(info, job)
+                    $('#packet-data').html('<strong>IVs: </strong>' + info.networkInfo.packets.data)
+                    $('#arp-pps').html('<strong>Packet/s: </strong>' + info.arpInfo.pps)
+                    $('#crack-keys').html('<strong>Tested Keys: </strong>' + info.crackinfo.keys)
+                    $('#crack-ivs').html('<strong>Crack IVs: </strong>' + info.crackinfo.ivs)
+                    //
+
+                    $('#current-ap-name').html('<strong>Current AP Name: </strong>' + apName)
+                    $('#current-ap-chan').html('<strong>Current AP Channel: </strong>' + info.networkInfo.channel)
+                    $('#current-ap-bssid').html('<strong>Current AP BSSID: </strong>' + info.networkInfo.BSSID)
+                    $('#current-ap-encryption').html('<strong>Current AP Encryption: </strong>' + info.networkInfo.SSID.encryption)
+                    //
+                    $('#current-iface').html('<strong>Current iFace: </strong>' + iface)
+                    $('#current-iface-given').html('<strong>Current Given iFace: </strong>' + job.current.given)
+                    $('#current-iface-nik').html('<strong>Current Device: </strong>' + job.current.nik)
+                    //
+                    $('#airmon-status-start').html('<strong>airmon-ng Status Msg: </strong>' + job.current.status)
+
+                }
+                socket.on('status', onStatus)
+                socket.on('step', function(step) {
+                    console.log(step)
+                    $('#steps').append('<p>' + step + '</p>')
+                })
+
+                $('.start-job-form').submit(function() {
+                    var config = {
+                        apName : $('.start-job-form #ap-name').val(),
+                        iface : $('.start-job-form #iface').val(),
+                        ourMac : $('.start-job-form #mac-of-iface').val(),
+                        minIvs : 15000
+                    }
+                    var url = []
+                    for(var key in config) {
+                        url.push(key + '=' + config[key])
+                    }
+
+                    FRAME5.xhr({
+                        url : '/start?' + url.join('&')
+                    }).on('end', function(data) {
+                        if(data.ok) {
+                            $('.start-job').hide()
+                            $('.status-job').show()
+                        }
+                        console.log(data)
+                    }).on('error', function(data) {
+                        console.log(data)
+                    })
+                    return false;
+                })
+            })
+		</script>
+		<!-- End Document
+		================================================== -->
+	</body>
+</html>

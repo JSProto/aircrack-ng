@@ -1,0 +1,93 @@
+/****
+ *
+ *
+ *
+ */
+var http = require('http');
+var fs = require('fs');
+var util = require('util');
+var events = require('events');
+var url = require('url');
+var path = require('path');
+var parser = require('xml2json');
+var spawn = require('child_process').spawn
+var utils = require('./utils')
+
+//
+
+
+var Dump = module.exports = function(dir, chan) {
+
+    events.EventEmitter.call(this);
+    this.dir = dir;
+    this.chan = chan;
+    this.info = {};
+
+}
+/**
+ * Inherits from EventEmitter
+ */
+util.inherits(Dump, events.EventEmitter);
+
+Dump.prototype.start = function() {
+    //-10.kismet.netxml
+    var id = this.id = utils.uuid()
+    var self = this;
+    var ls = this.ls = spawn('airodump-ng', ['wlan0', '-o', 'netxml,pcap', '-w', this.dir + '/' + id]);
+    var infoFile = this.infoFile = this.dir + '/' + id + '-01.kismet.netxml'
+    var isRunning = false;
+    fs.watchFile(infoFile, function(curr, prev) {
+        fs.readFile(infoFile, function(err, data) {
+            if(err)
+                throw err;
+
+
+            try {
+                var json = JSON.parse(parser.toJson(data.toString('utf8')));
+
+            } catch(err) {
+            }
+
+            if(json && json['detection-run']) {
+                if(!isRunning) {
+                    self.emit('crack', id)
+                    isRunning = true
+                }
+                json.id = id;
+                self.info = json
+                self.emit('info', json)
+
+            }
+        });
+    });
+
+    ls.stdout.setEncoding('utf8');
+
+
+    ls.stdout.on('data', function(data) {
+
+
+
+    });
+    ls.stderr.setEncoding('utf8');
+
+
+    ls.stderr.on('data', function(data) {
+        self.emit('data', data);
+
+    });
+
+    ls.on('exit', function(code) {
+        console.log('child process exited with code ' + code);
+        self.emit('end')
+    });
+}
+Dump.prototype.stop = function() {
+    if(this.ls) {
+        this.ls.kill('SIGHUP');
+        fs.unwatchFile(this.infoFile)
+    }
+}
+Dump.prototype.stats = function() {
+    return this.info
+}
