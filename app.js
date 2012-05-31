@@ -7,11 +7,11 @@ var ws = require('socket.io');
 var util = require('util');
 //
 
-var Airmon = require('./tests/airmon-ng');
-var Airdump = require('./tests/airodump-ng');
-var Airplay = require('./tests/aireplay-ng');
-var Aircrack = require('./tests/aircrack-ng');
-var Job = require('./tests/job');
+var Airmon = require('./lib/airmon-ng');
+var Airdump = require('./lib/airodump-ng');
+var Airplay = require('./lib/aireplay-ng');
+var Aircrack = require('./lib/aircrack-ng');
+var Job = require('./lib/job');
 //
 var currentJob = null;
 var currentJobStatus = null;
