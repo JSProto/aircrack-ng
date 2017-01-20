@@ -1,0 +1,29 @@
+{
+  "name": "aircrack-ng",
+  "version": "1.0.0",
+  "description": "Web UI for Aircrack-ng",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JSProto/aircrack-ng.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JSProto/aircrack-ng/issues"
+  },
+  "homepage": "https://github.com/JSProto/aircrack-ng#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "method-override": "^2.3.7",
+    "pug": "^2.0.0-beta6",
+    "socket.io": "^1.7.2",
+    "unload": "^1.3.5",
+    "uuid": "^3.0.1",
+    "xml2json": "^0.11.0"
+  }
+}
