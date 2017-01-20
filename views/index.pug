@@ -1,0 +1,79 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title Web UI for Aircrack-ng
+    meta(name='description', content='')
+    meta(name='author', content='')
+
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+
+    link(rel='stylesheet', href='css/base.css')
+    link(rel='stylesheet', href='css/skeleton.css')
+    link(rel='stylesheet', href='css/layout.css')
+    link(href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css', rel='stylesheet', type='text/css')
+
+    link(rel='shortcut icon', href='images/favicon.ico')
+    link(rel='apple-touch-icon', href='images/apple-touch-icon.png')
+    link(rel='apple-touch-icon', sizes='72x72', href='images/apple-touch-icon-72x72.png')
+    link(rel='apple-touch-icon', sizes='114x114', href='images/apple-touch-icon-114x114.png')
+
+  body
+    // Delete everything in this .container and get started on your own site!
+    .container.start-job
+      .sixteen.columns
+        h1.remove-bottom(style='margin-top: 40px') Web UI for Aircrack-ng
+        h5.version Version 0.0.1
+        hr
+
+      .one-third.column
+        h3 About?
+        p This is just a userver that i want to share with TB upload team.
+
+        form.start-job-form(action='')
+          label(for='ap-name') AP Name
+          input#ap-name(type='text')
+
+          label(for='iface') iFace
+          input#iface(type='text')
+
+          label(for='mac-of-iface') MAC Of iFace
+          input#mac-of-iface(type='text')
+
+          button(type='submit') Submit Form
+
+    .container.status-job
+      .sixteen.columns
+        h1.remove-bottom(style='margin-top: 40px') Web UI for Aircrack-ng
+        h5.version Version 0.0.1
+        hr
+      .one-third.column
+        h3 Steps
+        p#steps(style='height: 500;overflow: scroll;')
+      .half-bottom.column
+        h3 Status
+        p#packet-data
+        p#arp-pps
+        p#crack-keys
+        p#crack-ivs
+        hr
+        p#current-ap-name
+        p#current-ap-chan
+        p#current-ap-bssid
+        p#current-ap-encryption
+        hr
+        p#current-iface
+        p#current-iface-given
+        p#current-iface-nik
+        hr
+        p#airmon-status-start
+      .one-third.column
+        h3 Steps
+        button(type='submit') Stop
+    // container
+
+    script(type='text/javascript', src='/socket.io/socket.io.js')
+    script(type='text/javascript', src='/js/lib/frameworks/jquery-1.7.js')
+    script(type='text/javascript', src='/js/lib/frameworks/jquery-tmpl.js')
+    script(type='text/javascript', src='/js/lib/frameworks/jquery-ui.min.js')
+    script(type='text/javascript', src='/js/index.js')

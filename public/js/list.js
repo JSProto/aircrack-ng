@@ -19,22 +19,6 @@ jQuery(function($) {
 
     var onStatus = function(apName, iface, info, job) {
         console.log(info, job)
-        $('#packet-data').html('<strong>IVs: </strong>' + info.networkInfo.packets.data)
-        $('#arp-pps').html('<strong>Packet/s: </strong>' + info.arpInfo.pps)
-        $('#crack-keys').html('<strong>Tested Keys: </strong>' + info.crackinfo.keys)
-        $('#crack-ivs').html('<strong>Crack IVs: </strong>' + info.crackinfo.ivs)
-
-
-        $('#current-ap-name').html('<strong>Current AP Name: </strong>' + apName)
-        $('#current-ap-chan').html('<strong>Current AP Channel: </strong>' + info.networkInfo.channel)
-        $('#current-ap-bssid').html('<strong>Current AP BSSID: </strong>' + info.networkInfo.BSSID)
-        $('#current-ap-encryption').html('<strong>Current AP Encryption: </strong>' + info.networkInfo.SSID.encryption)
-
-        $('#current-iface').html('<strong>Current iFace: </strong>' + iface)
-        $('#current-iface-given').html('<strong>Current Given iFace: </strong>' + job.current.given)
-        $('#current-iface-nik').html('<strong>Current Device: </strong>' + job.current.nik)
-
-        $('#airmon-status-start').html('<strong>airmon-ng Status Msg: </strong>' + job.current.status)
     };
 
     socket.on('status', onStatus);

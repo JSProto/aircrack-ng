@@ -1,115 +1,141 @@
-/**
- *
- *  
- */
-var express = require('express');
-var ws = require('socket.io');
-var util = require('util');
-//
+const express = require('express');
+const http = require('http');
+const ws = require('socket.io');
 
-var Airmon = require('./lib/airmon-ng');
-var Airdump = require('./lib/airodump-ng');
-var Airplay = require('./lib/aireplay-ng');
-var Aircrack = require('./lib/aircrack-ng');
-var Job = require('./lib/job');
-//
-var currentJob = null;
-var currentJobStatus = null;
-//
+const methodOverride = require('method-override');
+const bodyParser = require('body-parser');
+
+const Airmon = require('./lib/airmon-ng');
+const Airdump = require('./lib/airodump-ng');
+const Airplay = require('./lib/aireplay-ng');
+const Aircrack = require('./lib/aircrack-ng');
+const Job = require('./lib/job');
+
+let app = express();
+let server = http.Server(app);
+
+let io = ws(server);
+let jobSocket = io.of('/ws/job');
+
+let currentJob = null;
+let currentJobStatus = null;
 
 
-var app = express.createServer();
+let logErrors = function(err, req, res, next) {
+    console.error(err.stack);
+    next(err);
+};
 
-app.sendError = function(err, res) {
-    app._request++;
-    res.writeHead(405, app.resHeaders);
-    res.end(JSON.stringify({
-        error : err.message,
-        stack : err.stack,
-        ok : false
-    }))
-}
-app.sendRes = function(data, res) {
-    app._request++;
-    res.writeHead(200, app.resHeaders);
-    if(!data.hasOwnProperty('ok')) {
-        data.ok = true;
+let clientErrorHandler = function(err, req, res, next) {
+    res.status(500);
+
+    if (req.xhr) {
+        if (req.accepts('html', 'json') == 'json') {
+            res.json({
+                error: err.message,
+                stack: err.stack,
+                ok: false
+            });
+        }
+        else {
+            res.send(err.message + '\n' + err.stack);
+        }
     }
-
-    res.end(JSON.stringify(data))
-}
-var io = ws.listen(app);
-
-io.set('log level', 0)
-
-
-var jobSocket = io.of('/ws/job');
-
-app.configure(function() {
-    app.use(express.static(__dirname + '/public'));
-    app.use(express.methodOverride());
-    app.use(express.bodyParser());
-    app.use(app.router);
-    app.resHeaders = {
-        'Content-Type' : 'application/json'
+    else {
+        next(err);
     }
-});
-var startJob = function(apName, ourMac, iface, minIvs) {
+};
 
-    if(currentJob !== null) {
-        return false;
-    }
+let errorHandler = function(error, req, res, next) {
+    let {message, stack} = error; // fix
+    res.render('error', {error});
+};
 
-    var job = currentJob = new Job(apName, ourMac, iface, minIvs);
+app.use(express.static(__dirname + '/public'));
+app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+app.use(logErrors);
+app.use(clientErrorHandler);
+app.use(errorHandler);
+
+app.set('views', __dirname + '/views');
+app.set('view engine', 'pug');
+
+
+let startJob = function(ap, mac, interface, minIvs) {
+
+    if (currentJob !== null) return false;
+
+    let job = currentJob = new Job(ap, mac, interface, minIvs);
 
     job.once('kill', function() {
         currentJob = null;
         currentJobStatus = null;
+    });
 
-    })
     job.on('status', function(info) {
-        console.log('packets.data', info.networkInfo.packets.data, 'arpInfo.pps', info.arpInfo.pps, 'crackinfo.keys', info.crackinfo.keys, 'arpInfo.pps', info.arpInfo.pps, 'crackinfo.ivs', info.crackinfo.ivs);
-        currentJobStatus = info
-        jobSocket.emit('status', apName, job.current.given, info, job)
-    })
+        console.log('packets.data', info.networkInfo.packets.data,
+            'arpInfo.pps', info.arpInfo.pps,
+            'crackinfo.keys', info.crackinfo.keys,
+            'arpInfo.pps', info.arpInfo.pps,
+            'crackinfo.ivs', info.crackinfo.ivs);
+
+        currentJobStatus = info;
+        jobSocket.emit('status', ap, job.current.given, info, job);
+    });
+
     job.on('step', function(step) {
-        console.log(step)
-        jobSocket.emit('step', step)
-    })
+        console.log(step);
+        jobSocket.emit('step', step);
+    });
 
+    job.start(interface => console.log(interface));
 
-    job.start(function(iface) {
-        console.log(iface)
-    })
-    return job
-}
+    return job;
+};
+
+app.all('/', (req, res) => res.render('index'));
+
+app.all('/list', (req, res) => res.render('list'));
+
 app.get('/start', function(req, res) {
-    if(!(req.query.apName && req.query.ourMac && req.query.iface && req.query.minIvs)) {
+    let {apName, ourMac, iface, minIvs} = req.query;
 
-        app.sendError(new Error('missing params req.query.apName && req.query.ourMac && req.query.iface && req.query.minIvs'), res)
+    if (!(apName && ourMac && iface && minIvs)) {
+        throw new Error('missing params req.query[apName, ourMac, iface, minIvs]');
     }
 
-    var job = startJob(req.query.apName, req.query.ourMac, req.query.iface, parseInt(req.query.minIvs))
-    if(job) {
+    let job = startJob(apName, ourMac, iface, parseInt(minIvs));
 
-        app.sendRes(job, res)
-    } else
-        app.sendError(new Error('cant start if running'), res)
-})
+    if (job) {
+        res.json(job);
+    }
+    else {
+        throw new Error('cant start if running')
+    }
+});
+
 app.get('/status', function(req, res) {
-    if(!currentJob) {
-
-        app.sendError(new Error('no current job running'), res)
-    } else
-        app.sendRes([currentJob, currentJobStatus], res)
-})
-app.get('/stop', function(req, res) {
-    if(!currentJob) {
-
-        app.sendError(new Error('no current job running'), res)
-    } else {
-        app.sendRes([currentJob.emit('kill'), currentJobStatus], res)
+    if (currentJob) {
+        res.json([currentJob, currentJobStatus]);
     }
-})
+    else {
+        throw new Error('no current job running')
+    }
+});
 
-app.listen(3000)
+app.get('/stop', function(req, res) {
+    if (currentJob) {
+        res.json([currentJob.emit('kill'), currentJobStatus]);
+    }
+    else {
+        throw new Error('no current job running');
+    }
+});
+
+server.listen(3000);
+console.log('server started on port 3000');
+
