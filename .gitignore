@@ -2,4 +2,4 @@
 *.pyc
 *.pyo
 node_modules
-dump/*
+/dump/*
